@@ -36,7 +36,7 @@ namespace TiendaServicios.Api.CarritoCompra
             {
                 options.UseMySQL(Configuration.GetConnectionString("ConexionBD"));
             });
-            services.AddControllers();
+            
             //para inyectar el servicio, solo es necedsario una vez
             services.AddMediatR(typeof(Nuevo.Manejador).Assembly);
 
@@ -51,6 +51,8 @@ namespace TiendaServicios.Api.CarritoCompra
             {
                 config.BaseAddress = new Uri(Configuration["Services:Autores"]);
             });
+
+            services.AddControllers();
 
         }
 
