@@ -11,6 +11,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using TiendaServicios.Api.Gateway.ImplementRemote;
+using TiendaServicios.Api.Gateway.InterfaceRemote;
+using TiendaServicios.Api.Gateway.MessageHandler;
 
 namespace TiendaServicios.Api.Gateway
 {
@@ -26,7 +29,14 @@ namespace TiendaServicios.Api.Gateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOcelot(); //para convetir en tipo gateway
+            services.AddHttpClient("AutorService", config =>
+            {
+                config.BaseAddress = new Uri(Configuration["Services:Autor"]);
+            });
+
+            services.AddSingleton<IAutorRemote, AutorRemote>();//scoped no funciona bien en en middleware por eso debe ser Singleton
+
+            services.AddOcelot().AddDelegatingHandler<LibroHandler>(); //para convetir en tipo gateway
             //services.AddControllers();
         }
 
