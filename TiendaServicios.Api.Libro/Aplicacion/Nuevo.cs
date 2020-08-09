@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using TiendaServicios.Api.Libro.Modelo;
 using TiendaServicios.Api.Libro.Persistencia;
+using TiendaServicios.RabbitMQ.Bus.BusRabbit;
+using TiendaServicios.RabbitMQ.Bus.EventoQueue;
 
 namespace TiendaServicios.Api.Libro.Aplicacion
 {
@@ -31,9 +33,11 @@ namespace TiendaServicios.Api.Libro.Aplicacion
         public class Manejador : IRequestHandler<Ejecuta>
         {
             private readonly ContextoLibreria context;
-            public Manejador(ContextoLibreria _context)
+            private readonly IRabbitEventBus eventBus;
+            public Manejador(ContextoLibreria _context, IRabbitEventBus _eventBus)
             {
                 context = _context;
+                eventBus = _eventBus;
             }
             public async Task<Unit> Handle(Ejecuta request, CancellationToken cancellationToken)
             {
@@ -49,6 +53,8 @@ namespace TiendaServicios.Api.Libro.Aplicacion
 
                 var resultado = await context.SaveChangesAsync();
 
+                eventBus.Publish(new EmailEventoQueue("santos.pool.nahuat@gmail.com", request.Titulo, "Este Contenido es un ejemplo"));
+                
                 if (resultado > 0)
                     return Unit.Value;
 

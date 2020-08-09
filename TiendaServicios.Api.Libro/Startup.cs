@@ -15,6 +15,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TiendaServicios.Api.Libro.Aplicacion;
 using TiendaServicios.Api.Libro.Persistencia;
+using TiendaServicios.RabbitMQ.Bus.BusRabbit;
+using TiendaServicios.RabbitMQ.Bus.Implement;
 
 namespace TiendaServicios.Api.Libro
 {
@@ -30,6 +32,7 @@ namespace TiendaServicios.Api.Libro
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddControllers()
                 .AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssemblyContaining<Nuevo>()); //solo es una vez igual para las validaciones
 
@@ -42,6 +45,9 @@ namespace TiendaServicios.Api.Libro
 
             //parte el automapper de DTOs
             services.AddAutoMapper(typeof(Consulta.Ejecuta).Assembly);
+
+            //implementacion de RabbitMQ
+            services.AddTransient<IRabbitEventBus, RabbitEventBus>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
